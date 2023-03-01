@@ -18,8 +18,12 @@
       </ion-title>
     </ion-toolbar>
   </ion-header>
+
+    <div class="ion-text-center">
+      <ion-button (click)="requestAuthorization()">Request Authorization</ion-button>
+    </div>
   
-  <ion-list>
+  <!-- <ion-list>
     <app-message *ngFor="let message of getMessages()" [message]="message"></app-message>
-  </ion-list>
+  </ion-list> -->
 </ion-content>

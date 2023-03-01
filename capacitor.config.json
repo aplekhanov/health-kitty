@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "HealthKitty",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}

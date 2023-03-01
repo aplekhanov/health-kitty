@@ -1,0 +1,8 @@
+{
+  "name": "HealthKitty",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "932046a7"
+}

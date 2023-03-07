@@ -9,7 +9,7 @@ import {
   SleepData,
 } from '@perfood/capacitor-healthkit';
 
-const READ_PERMISSIONS = ['calories', 'stairs', 'activity', 'steps', 'distance', 'duration', 'weight'];
+const READ_PERMISSIONS = ['activity'];
 
 
 import { DataService, Message } from '../services/data.service';
@@ -22,26 +22,65 @@ import { DataService, Message } from '../services/data.service';
 export class HomePage {
   constructor(private data: DataService) { }
 
-  refresh(ev: any) {
-    setTimeout(() => {
+  
+  async refresh(ev: any) {
+    try {
+      // Call getActivityData method
+      await this.getActivityData();
+  
+      // Complete the refresh operation
       (ev as RefresherCustomEvent).detail.complete();
-    }, 3000);
+    } catch (error) {
+      console.error(error);
+    }
   }
+  
 
   getMessages(): Message[] {
     return this.data.getMessages();
   }
 
-  public async requestAuthorization(): Promise<void> {
+  public async getActivityData(): Promise<void> {
+    
+    const endDate = new Date();
+    const startDate = new Date(endDate);
+    startDate.setDate(endDate.getDate() - 7);
+    
     try {
+
       await CapacitorHealthkit.requestAuthorization({
         all: [''],
         read: READ_PERMISSIONS,
         write: [''],
       });
 
+      const queryOptions = {
+        sampleName: SampleNames.WORKOUT_TYPE,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        limit: 0,
+      };
+
+      const queryResults =  await CapacitorHealthkit.queryHKitSampleType<ActivityData>(queryOptions);
+      this.data.messages = [];
+
+      for (const result of queryResults.resultData) {
+        const newMessage: Message = {
+          fromName: result.source,
+          subject: result.workoutActivityName,
+          date: result.startDate,
+          id: result.uuid,
+          duration: result.duration,
+          totalFlightsClimbed: result.totalFlightsClimbed,
+          totalSwimmingStrokeCount: result.totalSwimmingStrokeCount,
+          totalEnergyBurned: result.totalEnergyBurned,
+          totalDistance: result.totalDistance,
+        };
+        this.data.messages.push(newMessage);
+      }
+
     } catch (error) {
-      console.error('[HealthKitService] Error getting Authorization:', error);
+      console.error(error);
     }
   }
 

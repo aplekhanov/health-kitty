@@ -25,4 +25,8 @@ export class ViewMessagePage implements OnInit {
     const mode = win && win.Ionic && win.Ionic.mode;
     return mode === 'ios' ? 'Inbox' : '';
   }
+
+  async getDistance() {
+    await this.data.getDistance(this.message)
+  }
 }

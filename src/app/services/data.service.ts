@@ -10,7 +10,6 @@ import {
 
 const READ_PERMISSIONS = ['activity', 'distance'];
 
-
 export interface Message {
   fromName: string;
   subject: string;
@@ -27,8 +26,7 @@ export interface Message {
   providedIn: 'root'
 })
 export class DataService {
-  public messages: Message[] = [
-  ];
+  public messages: Message[] = [];
 
   constructor() { }
 
@@ -100,4 +98,34 @@ export class DataService {
     }
   }
 
+  public async getDistance(forWorkout: Message): Promise<void> {
+
+    const startDate = new Date(forWorkout.date);
+    const endDate = new Date();
+
+    try {
+    
+      await CapacitorHealthkit.requestAuthorization({
+        all: [''],
+        read: READ_PERMISSIONS,
+        write: [''],
+      });
+
+      const queryOptions = {
+        sampleName: SampleNames.DISTANCE_WALKING_RUNNING,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        limit: 0,
+      };
+
+      const queryResults =  await CapacitorHealthkit.queryHKitSampleType<ActivityData>(queryOptions);
+
+      for (const result of queryResults.resultData) {
+        console.log(result);
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }

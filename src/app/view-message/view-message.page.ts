@@ -26,7 +26,7 @@ export class ViewMessagePage implements OnInit {
     return mode === 'ios' ? 'Inbox' : '';
   }
 
-  async getDistance() {
-    await this.data.getDistance(this.message)
+  async getData() {
+    await this.data.getSamples(this.message)
   }
 }

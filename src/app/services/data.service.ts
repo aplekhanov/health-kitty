@@ -8,7 +8,7 @@ import {
   SleepData,
 } from '@perfood/capacitor-healthkit';
 
-const READ_PERMISSIONS = ['activity', 'distance'];
+const READ_PERMISSIONS = ['activity', 'distance', 'heartRate'];
 
 export interface Message {
   fromName: string;
@@ -98,7 +98,7 @@ export class DataService {
     }
   }
 
-  public async getDistance(forWorkout: Message): Promise<void> {
+  public async getSamples(forWorkout: Message): Promise<void> {
 
     const startDate = new Date(forWorkout.date);
     const endDate = new Date();
@@ -112,7 +112,7 @@ export class DataService {
       });
 
       const queryOptions = {
-        sampleName: SampleNames.DISTANCE_WALKING_RUNNING,
+        sampleName: SampleNames.HEART_RATE,
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
         limit: 0,

@@ -1,4 +1,15 @@
 import { Injectable } from '@angular/core';
+import {
+  ActivityData,
+  CapacitorHealthkit,
+  OtherData,
+  QueryOutput,
+  SampleNames,
+  SleepData,
+} from '@perfood/capacitor-healthkit';
+
+const READ_PERMISSIONS = ['activity', 'distance'];
+
 
 export interface Message {
   fromName: string;
@@ -44,4 +55,49 @@ export class DataService {
       return errorMessage;
     }
   }
+
+  public async getActivityData(): Promise<void> {
+    
+    const endDate = new Date();
+    const startDate = new Date(endDate);
+    startDate.setDate(endDate.getDate() - 7);
+    
+    try {
+
+      await CapacitorHealthkit.requestAuthorization({
+        all: [''],
+        read: READ_PERMISSIONS,
+        write: [''],
+      });
+
+      const queryOptions = {
+        sampleName: SampleNames.WORKOUT_TYPE,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        limit: 0,
+      };
+
+      const queryResults =  await CapacitorHealthkit.queryHKitSampleType<ActivityData>(queryOptions);
+      this.messages = [];
+
+      for (const result of queryResults.resultData) {
+        const newMessage: Message = {
+          fromName: result.source,
+          subject: result.workoutActivityName,
+          date: result.startDate,
+          id: result.uuid,
+          duration: result.duration,
+          totalFlightsClimbed: result.totalFlightsClimbed,
+          totalSwimmingStrokeCount: result.totalSwimmingStrokeCount,
+          totalEnergyBurned: result.totalEnergyBurned,
+          totalDistance: result.totalDistance,
+        };
+        this.messages.push(newMessage);
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 }

@@ -8,7 +8,7 @@ import {
   SleepData,
 } from '@perfood/capacitor-healthkit';
 
-const READ_PERMISSIONS = ['activity', 'distance', 'heartRate'];
+const READ_PERMISSIONS = ['activity', 'workoutRoute'];
 
 export interface Message {
   fromName: string;
@@ -112,16 +112,17 @@ export class DataService {
       });
 
       const queryOptions = {
-        sampleName: SampleNames.HEART_RATE,
+        sampleUUID: forWorkout.id,
+        sampleName: forWorkout.subject,
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
         limit: 0,
       };
 
-      const queryResults =  await CapacitorHealthkit.queryHKitSampleType<ActivityData>(queryOptions);
+      const queryResults =  await CapacitorHealthkit.queryHKitWorkoutRouteLocations(queryOptions);
 
       for (const result of queryResults.resultData) {
-        console.log(result);
+        console.log(result.timestamp, result.speed);
       }
 
     } catch (error) {
